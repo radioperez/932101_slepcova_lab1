@@ -33,16 +33,17 @@ def filegetter(option, url, filename):
     try:
         with urlopen(url) as response:
             length = float(response.headers['content-length'])
-            downloaded = 0
+            downloaded = 0.0
             data_blocks = []
             
             while True:
                 block = response.read(1024)
                 data_blocks.append(block)
                 downloaded += len(block)
-                percent = downloaded * 100 / length
+                percent = int(downloaded * 100 / length)
                 if option:
-                    print(f'[{f'{percent:.2f}%':>^{percent}}{('-'*(100-int(percent)))}]', end='\r')
+                    print(end='\r', flush=True)
+                    print(f'[{f'{percent}%':>^{percent}}{('-'*(100-int(percent)))}]', end='\r', flush=True)
 
                 if not len(block):
                     if option: print('\n')
@@ -55,8 +56,8 @@ def filegetter(option, url, filename):
 
     except ValueError:
         print("Неправильно введен URL. --help")
-    except:
-        print("Ошибка сети.")
+    except Exception as e:
+        print("Ошибка сети.", e.__cause__)
     
 if __name__ == '__main__':
     option, url, filename = parser(sys.argv)
